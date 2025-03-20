@@ -1,11 +1,11 @@
 class ResolutionPadding:
     """
-    A node that takes a target resolution string and outputs padding values
+    A node that takes width and height as integers and outputs padding values
     
     Class methods
     -------------
     INPUT_TYPES (dict):
-        Define the input string parameter for resolution
+        Define the input integer parameters for width and height
         
     Attributes
     ----------
@@ -25,13 +25,23 @@ class ResolutionPadding:
     @classmethod
     def INPUT_TYPES(s):
         """
-        Define the input field for the resolution string
+        Define the input fields for width and height as integers
         """
         return {
             "required": {
-                "target_resolution": ("STRING", {
-                    "multiline": False,
-                    "default": "250x250"
+                "width": ("INT", {
+                    "default": 250, 
+                    "min": 1,
+                    "max": 10000,
+                    "step": 1,
+                    "display": "number"
+                }),
+                "height": ("INT", {
+                    "default": 250, 
+                    "min": 1,
+                    "max": 10000,
+                    "step": 1,
+                    "display": "number"
                 }),
             },
         }
@@ -43,16 +53,20 @@ class ResolutionPadding:
     
     CATEGORY = "Resolution"
     
-    def calculate_padding(self, target_resolution):
+    def calculate_padding(self, width, height):
         """
-        Calculate padding values based on the target resolution string
+        Calculate padding values based on width and height
         
         Parameters:
-        target_resolution (str): Resolution in format "widthxheight"
+        width (int): Width of the resolution
+        height (int): Height of the resolution
         
         Returns:
         tuple: (left, top, right, bottom) padding values
         """
+        # Create the resolution key in the format "widthxheight"
+        resolution = f"{width}x{height}"
+        
         # Padding values based on the table
         padding_map = {
             "250x250": (0, 0, 0, 0),
@@ -64,9 +78,6 @@ class ResolutionPadding:
             "970x90": (5006, 0, 5006, 0),
             "980x90": (5063, 0, 5063, 0)
         }
-        
-        # Normalize the resolution string (trim spaces, ensure lowercase)
-        resolution = target_resolution.strip().lower()
         
         # Return the padding values if the resolution is in our map
         if resolution in padding_map:
